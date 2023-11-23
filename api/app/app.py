@@ -12,8 +12,8 @@ def build_app() -> FastAPI:
     classifier = TfidfClassifier(tfidf_path)
 
     @app_.post('/predict', response_model=Prediction)
-    async def predict_single(text: str) -> Prediction:
-        return classifier.predict([text])[0]
+    async def predict_single(texts: list[str]) -> list[Prediction]:
+        return classifier.predict(texts)
 
     return app_
 
