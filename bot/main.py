@@ -22,7 +22,6 @@ def get_text_messages(message):
         predictions = typeAdapter.validate_python(json.loads(response.text))
         answer = ""
         for prediction in predictions:
-            answer += prediction.theme
             answer += f'Тема: {prediction.theme}\n'
             if prediction.theme_group:
                 answer += f'Группа тем: {prediction.theme_group}\n'
