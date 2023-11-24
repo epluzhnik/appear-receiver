@@ -2,19 +2,22 @@ import collections
 import json
 import pathlib
 
-from app.data_models.prediction import Prediction
+from app.data_models import Prediction
 
 
 class StatisticsCollector:
     def __init__(self, statistics_path: pathlib.Path) -> None:
         self.path = statistics_path
-        self.path.mkdir(parents=True, exist_ok=True)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         self._load()
 
     def _load(self) -> None:
         self.theme_counts = collections.Counter()
         self.theme_group_counts = collections.Counter()
         self.executor_counts = collections.Counter()
+
+        if not self.path.exists():
+            return
 
         with open(self.path, 'r') as file:
             data = json.load(file)
