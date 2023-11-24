@@ -3,13 +3,36 @@ ML API
 
 API для предсказания по тексту обращения темы, группы тем и исполнителя.
 
-### Запуск
+---
+### Запуск (docker)
 
-```bash
-docker build -t appear-api:latest .
-docker run --rm --name appear-api -p="8000:8000" appear-api:latest
-```
+1. Сборка контейнера
+   ```bash
+   docker build -t appear-api:latest .
+   ```
 
+2. Запуск контейнера
+   ```bash
+   docker run --rm --name appear-api -p="8000:8000" appear-api:latest
+   ```
+
+### Запуск (без docker)
+1. Если не установлен `poetry>1.6`
+   ```bash
+   curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.6.1 python3 -
+   ```
+
+2. Настройка окружения
+   ```bash
+   poetry install
+   ```
+   
+3. Запуск
+   ```bash
+   poetry install
+   ```
+   
+---
 > **Swagger - http://0.0.0.0:8000/docs**
 
 ### Фичи
