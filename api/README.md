@@ -5,8 +5,10 @@ API для предсказания по тексту обращения тем�
 
 ### Запуск
 
-1. `docker build -t appear-api:latest .`
-2. `docker run --rm --name appear-api -p="8000:8000" appear-api:latest`
+```bash
+docker build -t appear-api:latest .
+docker run --rm --name appear-api -p="8000:8000" appear-api:latest
+```
 
 > **Swagger - http://0.0.0.0:8000/docs**
 
