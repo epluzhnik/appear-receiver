@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from app.classifier.sklearn_pipeline import MultiPipelineClassifier
 from app.data_models import PredictionResponse, Statistics, Prediction
 from app.incidents.tracker import GroupIncidentTracker
-from app.mapings import THEME_TO_GROUP, THEME_TO_THEME
+from app.mappings import THEME_TO_GROUP, THEME_TO_THEME
 from app.statistics.stats_collector import StatisticsCollector
 from app.statistics.stats_exporter import export_to_dict
 from resources import RESOURCES_PATH
