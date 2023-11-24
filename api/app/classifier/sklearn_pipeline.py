@@ -13,8 +13,8 @@ class MultiPipelineClassifier(BaseClassifier):
             self,
             theme_path: pathlib.Path,
             executor_path: pathlib.Path,
-            theme_threshold: float = 0.0,
-            executor_threshold: float = 0.0,
+            theme_threshold: float = 0.3,
+            executor_threshold: float = 0.5,
     ) -> None:
         self._theme_pipeline: sklearn.pipeline.Pipeline = joblib.load(str(theme_path))
         self._executor_pipeline: sklearn.pipeline.Pipeline = joblib.load(str(executor_path))
