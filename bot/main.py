@@ -15,12 +15,10 @@ from aiogram import types
 from aiogram.filters.command import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-
-
 voice_dir = "./voice"
-models_dir =  "./models"
+models_dir = "./models"
 video_dir = "./video"
-excel_dir = "./excel"
+excel_dir = "./"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Loading model...")
@@ -59,12 +57,10 @@ async def help(message: types.Message):
     await message.reply("Бот для принятия обращений")
 
 
-@dp.message(Command("admin"))
+@dp.message(Command("stats"))
 async def help(message: types.Message):
     response = requests.get('http://localhost:8000/export_stats', json=[message.text])
     info = json.loads(response.text)
-    print(info)
-
     await export_to_excel(info['theme_counts'], info['theme_group_counts'], info['executor_counts'], message)
 
 
@@ -91,6 +87,7 @@ def answer(message: types.Message, text):
 
 @dp.message(F.text)
 async def get_text(message: types.Message):
+    await message.answer("Ваш запрос принят.")
     await message.answer(answer(message, message.text), reply_markup=builder.as_markup())
 
 
@@ -107,8 +104,12 @@ async def answer_voice(message: types.Message):
 
     mess = await message.reply("Обработка аудио...")
     text = get_text(model, filename)
+    await message.answer("Ваш запрос принят.")
     await mess.delete()
-    await message.answer(answer(message, text), reply_markup=builder.as_markup())
+    ans = answer(message, text)
+    if ans != "Не понимаю обращение. Сформулируйте точнее":
+        await message.answer("Понял, Ваш запрос: " + text)
+    await message.answer(ans, reply_markup=builder.as_markup())
 
 
 @dp.message(F.video)
@@ -132,7 +133,12 @@ async def answer_video(message: types.Message):
     mess = await message.reply("Обработка видео...")
     text = get_text(model, output_filename)
     await mess.delete()
-    await message.answer(answer(message, text), reply_markup=builder.as_markup())
+    await message.reply(text)
+    await message.answer("Ваш запрос принят.")
+    ans = answer(message, text)
+    if ans != "Не понимаю обращение. Сформулируйте точнее":
+        await message.answer("Понял, Ваш запрос: " + text)
+    await message.answer(ans, reply_markup=builder.as_markup())
 
 
 def video_decoding(video_filename: str, ogg_audio_filename: str) -> None:
@@ -164,21 +170,24 @@ async def export_to_excel(theme_counts, theme_group_counts, executor_counts, mes
     theme_df = pd.DataFrame(
         theme_counts.items(),
         columns=['Тема', 'Количество обращений']
-    ).reset_index()
+    ).reset_index(drop=True)
+    await message.answer('<pre>' + theme_df.to_markdown() + '</pre>', parse_mode="html")
     theme_group_df = pd.DataFrame(
         theme_group_counts.items(),
         columns=['Группа тем', 'Количество обращений']
-    ).reset_index()
+    ).reset_index(drop=True)
+    await message.answer('<pre>' + theme_group_df.to_markdown() + '</pre>', parse_mode="html")
     executor_df = pd.DataFrame(
         executor_counts.items(),
         columns=['Исполнитель', 'Количество обращений']
-    )
+    ).reset_index(drop=True)
+    await message.answer('<pre>' + executor_df.to_markdown() + '</pre>', parse_mode="html")
 
-    with pd.ExcelWriter(os.path.join(excel_dir, 'path_to_file.xlsx')) as writer:
-        theme_df.to_excel(writer, sheet_name="Количество обращений по темам", index=False)
-        theme_group_df.to_excel(writer, sheet_name="Количество обращений по группам тем", index=False)
-        executor_df.to_excel(writer, sheet_name="Количество обращений по исполнителям", index=False)
-        await message.answer_document(executor_df)
+    # with pd.ExcelWriter(os.path.join(excel_dir, 'path_to_file.xlsx')) as writer:
+    # theme_df.to_excel(writer, sheet_name="Количество обращений по темам", index=False)
+    # theme_group_df.to_excel(writer, sheet_name="Количество обращений по группам тем", index=False)
+    # executor_df.to_excel(writer, sheet_name="Количество обращений по исполнителям", index=False)
+    # await message.answer_document(executor_df)
 
 
 async def main():
